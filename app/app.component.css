@@ -1,0 +1,27 @@
+.item{
+  text-align: center;
+  margin-right: 20px;
+  height: 90px;
+  padding: 10px;
+}
+.item img{
+  display: block;
+  width: 80px;
+  height: 50px;
+  margin: 0 auto 5px;
+}
+.item span{
+  font-size: 14px;
+}
+.folder{
+  font-size: 14px;
+  color: #666666;
+  line-height: 22px;
+}
+.itemBg{
+  background-color: #dedede;
+}
+.level_0{
+  height: 44px;
+  line-height:  44px;
+}

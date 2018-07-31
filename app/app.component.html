@@ -1,0 +1,33 @@
+<div style="display: flex;margin-top: 40px;" #div>
+  <div class="folder">
+    <div *ngFor="let item of treeData" style="color: #337ab7">
+      <div class="level_0" (click)="expand(item)">
+        <span *ngIf="item.children" style="font-weight: bold;font-size: 24px;">
+          <span *ngIf="item.title === currentFolder.title">-</span>
+          <span *ngIf="item.title !== currentFolder.title">+</span>
+        </span>
+        {{item.title}}
+      </div>
+      <div *ngIf="item.title === currentFolder.title" style="margin-left: 15px;">
+        <div *ngFor="let it of item.children">
+          <div>title</div>
+          <div style="padding-left: 15px" *ngFor="let data of it">{{data}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="display: flex; margin-left: 20px;">
+    <div [ngClass]="{'itemBg': item.title === current.title}" (click)="pressItem(item,$event)" *ngFor="let item of list" class="item">
+      <img [src]="item.src" />
+      <span>{{item.title}}</span>
+    </div>
+  </div>
+
+  <div style="display: flex;color: rgb(0, 133, 179);margin-top:20px;">
+    <div (click)="add()">新建</div>
+    <div style="margin-left: 10px;margin-right:10px;">编辑</div>
+    <div>删除</div>
+  </div>
+</div>
+<ng-template #alertContainer></ng-template>
+<!-- <tree [tree]="tree"></tree> -->
