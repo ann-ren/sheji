@@ -1,18 +1,21 @@
 <div style="display: flex;margin-top: 40px;" #div>
   <div class="folder">
-    <div *ngFor="let item of treeData" style="color: #337ab7">
-      <div class="level_0" (click)="expand(item)">
+    <div *ngFor="let item of c" style="color: #337ab7">
+      <!-- <div class="level_0" (click)="expand(item)">
         <span *ngIf="item.children" style="font-weight: bold;font-size: 24px;">
           <span *ngIf="item.title === currentFolder.title">-</span>
           <span *ngIf="item.title !== currentFolder.title">+</span>
         </span>
         {{item.title}}
-      </div>
-      <div *ngIf="item.title === currentFolder.title" style="margin-left: 15px;">
+      </div> -->
+
+      <div style="margin-left: 15px;">
         <div *ngFor="let it of item.children">
-          <div>title</div>
-          <div style="padding-left: 15px" *ngFor="let data of it">{{data}}</div>
+          <child [data]="it"></child>
         </div>
+
+        <div></div>
+
       </div>
     </div>
   </div>

@@ -3,6 +3,8 @@ import { Observable, Subject, asapScheduler, pipe, of, from, interval, merge, fr
 import {DialogService} from './services/dialog.service';
 import { map, filter, scan } from 'rxjs/operators';
 import { TreeModel } from 'ng2-tree';
+import { assertPreviousIsParent } from '@angular/core/src/render3/instructions';
+import { convertInjectableProviderToFactory } from '@angular/core/src/di/injectable';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -17,7 +19,6 @@ export class AppComponent {
   ){}
 
   ngAfterViewInit() {
-    console.log(this.div,'2322323')
   }
   current = {};
   currentFolder = {};
@@ -80,10 +81,22 @@ export class AppComponent {
     this.currentFolder = item;
   }
   treeData = [];
+  convert(arr) {
+    if(arr.length === 1){
+      return {title: arr[0]};
+    }
+    return {title: arr[0],child: this.convert(arr.slice(1,arr.length))}
+  }
+  i=-1;
+  treeObj(arr) {
+    if(arr.length==1){return arr[0];}
+    return {[arr[0]]: this.treeObj(arr.slice(1,arr.length)};
+  }
   ngOnInit() {
+    // console.log(this.convert([1,2,3,4,5]))
     let listTreeData =[
       {
-      "ID":"1_2_3",
+      "ID":"1_2_3_4_5_6",
       "Titile":"Title0",
       Main:{
       "Run":"Main.py",
@@ -92,12 +105,12 @@ export class AppComponent {
           "I120*20":"Para120_20.json"
         }
       },
-      "Category":["1|2|3","4|5"],
+      "Category":["1|2|3|4|5","4|5|6|7"],
       "Usage":"usage0"
     },
     {
-      "ID":"1_2_4",
-      "Titile":"Title1"
+      "ID":"1_2_3_4_5_6",
+      "Titile":"Title2",
       Main:{
       "Run":"Main.py",
       "Family":{
@@ -105,18 +118,50 @@ export class AppComponent {
           "I120*20":"Para120_20.json"
         }
       },
-      "Category":["1|2|4","4|5"],
+      "Category":["1|2|3|4|6","4|5|6|7"],
+      "Usage":"usage0"
+    },
+    {
+      "ID":"1_2_4",
+      "Titile":"Title1",
+      Main:{
+      "Run":"Main.py",
+      "Family":{
+          "Default":"Para.json",
+          "I120*20":"Para120_20.json"
+        }
+      },
+      "Category":["aa|bb|cc","4|5"],
       "Usage":"usage1"
     }]
-
+    
     this.treeData = listTreeData.map(data => {
-      let tree = {title: data.Titile};
-      tree.children = data.Category.map(data => {
-        return data.split("|")
+      this.tree = {};
+      this.tree.children = data.Category.map(datae => {
+        var c = datae.split("|");
+        c.push({leaf: data.Titile});
+        return c
       })
-      return tree;
+      // this.tree.children.push(data.Titile);
+      return this.tree;
     })
-    console.log(this.treeData,'tree')
+    console.log(this.treeData,88)
+    this.bb=this.treeData.map(data => {
+      return data.children.map(data => {
+        return this.treeObj(data);
+      })
+    })
+    console.log(this.bb,'bb')
+    this.c= this.treeData.map(data => {
+      return {
+        title: data.title,
+
+        children: data.children.map(data => {
+          return this.convert(data);
+        })
+      }
+    })
+    // console.log(this.c)
   };
   add() {
 
@@ -135,7 +180,51 @@ export class AppComponent {
 export class AlertComponent{
   @Input() style;
   ngOnInit() {
-    console.log(this.style,888)
   }
 
+}
+
+
+
+@Component({
+  selector: 'child',
+  template: `
+    <div style="margin-left: 15px">
+      <span (click)="onPress(data)">
+        <span *ngIf="data&&data.child">
+          <span *ngIf="data.isExpand">-</span>
+          <span *ngIf="!data.isExpand">+</span>
+        </span>{{data&&data.title}}
+      </span>
+      <div *ngIf="data.isExpand">
+        <child *ngIf="data&&data.child" [data]="data.child"></child>
+      </div>
+    </div>  
+  `
+})
+
+export class ChildComponent{
+  @Input() data;
+  datas=this.data;
+  ngOnInit() {
+    // console.log(this.data,2222)
+  }
+  selVal;
+  onPress = (data) => {
+    this.datas= {...this.data};
+    // while(this.datas.child){
+    //   if(this.data.child.title===this.selVal){
+    //     return;
+    //   }else{
+    //     this.datas.isExpand=false;
+    //     this.datas=this.datas.child;
+    //   }
+    // }
+    this.selVal = data.title;
+    if(!data.isExpand){
+      data.isExpand=true;
+    }else{
+      data.isExpand=false;
+    }
+  }
 }
